@@ -1,0 +1,49 @@
+// Enter READ/WRITE commands into this file
+// READ <OPTIONAL number type: bin/hex/oct> <virtual memory address or random>
+// WRITE <OPTIONAL number type: bin/hex/oct> <virtual memory address or random>
+
+// --- ESCENARIO 1: Llenado inicial y demostracion de First-Fit ---
+
+// 1. Primer acceso: Lee la pagina 5.
+//    - Como la memoria esta casi vacia, esto causara un FALLO DE PAGINA.
+//    - La pagina 5 se cargara en el primer marco fisico disponible.
+READ hex 14000
+
+// 2. Segundo acceso: Lee la pagina 10.
+//    - Otro FALLO DE PAGINA.
+//    - La pagina 10 se cargara en el siguiente marco fisico disponible.
+READ hex 28000
+
+// 3. Tercer acceso: Lee la pagina 2.
+//    - Otro FALLO DE PAGINA.
+//    - La pagina 2 se cargara en el marco fisico 2.
+READ hex 8000
+
+// 4. DEMOSTRACION DE FIRST-FIT: Leemos la pagina 25.
+//    - Esto provocara un FALLO DE PAGINA y se necesitara reemplazar a una victima.
+//    - Segun First-Fit, la victima debe ser la PRIMERA pagina que se encuentre en memoria.
+//    - En este punto, las paginas cargadas son la 2, 5 y 10.
+//    - El simulador buscara desde la pagina 0 y la primera que encontrara cargada es la pagina 2.
+//    - ESPERADO: La pagina 2 sera reemplazada por la pagina 25.
+READ hex 64000
+
+
+// --- ESCENARIO 2: Errores de Segmentacion y Memoria ---
+
+// 5. ERROR DE SEGMENTACION: Acceso en rango que cruza dos segmentos.
+//    - La direccion 0x0BFFF esta en la pagina 2 (Segmento S1).
+//    - La direccion 0x0C000 esta en la pagina 3 (Segmento S2).
+//    - Esta instruccion intenta leer un rango que abarca ambos segmentos.
+//    - ESPERADO: El simulador debe mostrar "ERROR SEGMEN".
+READ hex BFFF-C000
+
+// 6. ERROR DE FUERA DE RANGO: Acceso a una direccion mas alla de la ultima pagina.
+//    - La ultima pagina definida es la 31, que termina en la direccion 0x7FFFF.
+//    - La direccion 0x80000 esta fuera de la memoria virtual definida.
+//    - ESPERADO: El simulador debe mostrar "FUERA DE MEMORIA".
+READ hex 80000
+
+// 7. Acceso normal dentro de un rango en un solo segmento (para verificar que funciona).
+//    - Ambas direcciones estan dentro del Segmento S5 (paginas 23-31).
+//    - ESPERADO: La operacion se completa sin errores.
+READ hex 70000-71000
